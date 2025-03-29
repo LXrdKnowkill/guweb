@@ -1,0 +1,125 @@
+{% extends 'admin/base.html' %}
+{% block title %} Mapas {% endblock %}
+
+{% block content %}
+<section class="section" style="background-color: #121212;">
+  <div class="container">
+    <div class="box has-background-dark has-shadow p-5 mb-6">
+      <h1 class="title has-text-white is-size-2 mb-3">
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-music"></i></span>
+          <span>Gerenciar Mapas</span>
+        </span>
+      </h1>
+      <p class="subtitle has-text-grey-light mb-5">Veja, filtre e altere o status de mapas entre Graveyard e Ranked.</p>
+
+      <!-- Barra de busca estilizada -->
+      <form method="get" action="/admin/maps" class="mb-6">
+        <div class="field has-addons">
+          <div class="control is-expanded has-icons-left">
+            <input class="input is-medium is-rounded is-dark" type="text" name="q" placeholder="Pesquisar por título, artista ou diff..." value="{{ query or '' }}">
+            <span class="icon is-left">
+              <i class="fas fa-search"></i>
+            </span>
+          </div>
+          <div class="control">
+            <button class="button is-info is-medium is-rounded has-text-weight-bold" type="submit">
+              <span class="icon">
+                <i class="fas fa-search"></i>
+              </span>
+              <span>Buscar</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Tabela de mapas -->
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable has-background-dark has-text-white" style="border-radius: 8px; overflow: hidden; border: 1px solid #2c2c2c;">
+          <thead>
+            <tr class="has-background-grey-darker">
+              <th class="has-text-centered">ID</th>
+              <th><span class="icon-text"><span class="icon"><i class="fas fa-microphone"></i></span><span>Artista</span></span></th>
+              <th><span class="icon-text"><span class="icon"><i class="fas fa-music"></i></span><span>Título</span></span></th>
+              <th><span class="icon-text"><span class="icon"><i class="fas fa-headphones"></i></span><span>Diff</span></span></th>
+              <th class="has-text-centered"><span class="icon-text"><span class="icon"><i class="fas fa-chart-line"></i></span><span>Status</span></span></th>
+              <th class="has-text-centered"><span class="icon-text"><span class="icon"><i class="fas fa-cog"></i></span><span>Ação</span></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for map in maps %}
+            <tr class="{% if loop.index is divisibleby 2 %}has-background-grey-darker{% endif %}">
+              <td class="has-text-centered">{{ map.id }}</td>
+              <td>{{ map.artist }}</td>
+              <td>{{ map.title }}</td>
+              <td><span class="tag is-info is-light">[{{ map.version }}]</span></td>
+              <td class="has-text-centered">
+                {% if map.status == 2 %}
+                  <span class="tag is-success is-light is-medium">
+                    <span class="icon"><i class="fas fa-check-circle"></i></span>
+                    <span>Ranked</span>
+                  </span>
+                {% else %}
+                  <span class="tag is-danger is-light is-medium">
+                    <span class="icon"><i class="fas fa-skull-crossbones"></i></span>
+                    <span>Graveyard</span>
+                  </span>
+                {% endif %}
+              </td>
+              <td class="has-text-centered">
+                {% if map.status == 0 %}
+                <form action="/admin/maps/rank" method="post">
+                  <input type="hidden" name="map_id" value="{{ map.id }}">
+                  <button class="button is-success is-rounded" type="submit">
+                    <span class="icon"><i class="fas fa-arrow-up"></i></span>
+                    <span>Rankear</span>
+                  </button>
+                </form>
+                {% else %}
+                  <button class="button is-static is-rounded has-background-grey-lighter has-text-grey-dark">
+                    <span class="icon"><i class="fas fa-check"></i></span>
+                    <span>Rankeado</span>
+                  </button>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table td, .table th {
+    border: 1px solid #2c2c2c;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+
+  .table tr:hover {
+    background-color: #2c2c2c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .button {
+    transition: all 0.3s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .has-shadow {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  }
+</style>
+{% endblock %}
